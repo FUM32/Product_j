@@ -9,10 +9,12 @@ import javafx.geometry.*;
 import java.util.Scanner;
 import java.io.*;
 
-public class Kadai04_1 extends Application
+public class Kadai04_2 extends Application
 {
 	private TextField[][] tf = new TextField[9][9];
 	private static int[][] board = new int[9][9];
+
+	private Button bt = new Button("リセット");
 	
 	public static void main(String[] args)
 	{
@@ -55,19 +57,38 @@ public class Kadai04_1 extends Application
 			}
 		}
 		
-		GridPane gp = new GridPane();
-		gp.setHgap(5);
-		gp.setVgap(5);
-		for(int i=0; i<9; i++){
-			for(int j=0; j<9; j++){
-				gp.add(tf[i][j],j,i);
+
+		GridPane main_gp = new GridPane();
+		main_gp.setHgap(12);
+		main_gp.setVgap(12);
+		main_gp.setAlignment(Pos.CENTER);
+
+
+		for(int k=0; k<3; k++){
+			for(int l=0; l<3; l++){
+				GridPane sub_gp1 = new GridPane();
+				sub_gp1.setHgap(4);
+				sub_gp1.setVgap(4);
+				for(int i=0; i<3; i++){
+					for(int j=0; j<3; j++){
+						sub_gp1.add(tf[k*3+i][l*3+j],j,i);
+					}
+				}
+				main_gp.add(sub_gp1,l,k);
 			}
 		}
-		gp.setAlignment(Pos.CENTER);
-		
-		Scene sc = new Scene(gp,500,500);
+	
+		GridPane sub_gp2 = new GridPane();
+		sub_gp2.add(bt,0,0);
+		sub_gp2.setAlignment(Pos.CENTER);
+
+		BorderPane bp = new BorderPane();
+		bp.setCenter(main_gp);
+		bp.setBottom(sub_gp2);
+
+		Scene sc = new Scene(bp,500,500);
 		stage.setScene(sc);
-		stage.setTitle("3x3");
+		stage.setTitle("数独");
 		stage.show();
 	}
 }
