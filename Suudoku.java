@@ -10,7 +10,7 @@ import java.io.*;
 import javafx.event.*;
 import javafx.collections.*;
 
-public class Kadai05_1 extends Application
+public class Kadai05_2 extends Application
 {
 	private ArrayList<ComboBox<String>> cb_list
 			= new ArrayList<ComboBox<String>>();
@@ -46,25 +46,40 @@ public class Kadai05_1 extends Application
 	
 	public void start(Stage stage)throws Exception
 	{
-		ObservableList<String> candibate =
-			FXCollections.observableArrayList
-				("1","2","3","4","5","6","7","8","9");
-		
-		for(int i=0; i<9; i++){
+
+        for(int i=0; i<9; i++){
 			for(int j=0; j<9; j++){
 				ComboBox<String> cb = new ComboBox<String>();
-				if (board[i][j] == 0){
-					cb.setItems(candibate);
-					cb.setOnAction(new InputEventHandler());
-				}else{
-					ObservableList<String> ol=
+                ObservableList<String> ol =
 						FXCollections.observableArrayList();
+				if (board[i][j] == 0){
+                    int[] gray = new int[10];
+
+                    for(int k=0; k<9; k++){
+						gray[board[i][k]] = 1;
+                        gray[board[k][j]] = 1;
+					}
+                    for(int k=0; k<3; k++){
+						for(int l=0; l<3; l++){
+							gray[board[(i/3)*3+k][(j/3)*3+l]] = 1;
+						}
+					}
+
+                    for(int n=1; n<=9; n++){
+						if(gray[n] == 0){
+							ol.add(String.valueOf(n));
+						}
+					}
+
+					cb.setItems(ol);
+					cb.setOnAction(new InputEventHandler());
+                }else{
 					ol.add(String.valueOf(board[i][j]));
 					cb.setItems(ol);
 					cb.setValue(String.valueOf(board[i][j]));
 					cb.setBackground(new Background
 					  (new BackgroundFill(Color.GRAY, null, null)));
-				}
+                }
 				cb_list.add(cb);
 			}
 		}
