@@ -4,20 +4,21 @@ import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.*;
-import javafx.scene.text.*;
 import javafx.geometry.*;
-import java.util.Scanner;
+import java.util.*;
 import java.io.*;
 import javafx.event.*;
+import javafx.collections.*;
 
-public class Kadai04_3 extends Application
+public class Kadai05_1 extends Application
 {
-	private TextField[][] tf = new TextField[9][9];
+	private ArrayList<ComboBox<String>> cb_list
+			= new ArrayList<ComboBox<String>>();
 	private static int[][] board = new int[9][9];
 
 	private Button bt = new Button("リセット");
     
-	private Label lb = new Label("空いているマスに1桁の数字を入力してください");
+	private Label lb = new Label("各コンボボックスで数字を選択してください");
 	
 	public static void main(String[] args)
 	{
@@ -45,29 +46,32 @@ public class Kadai04_3 extends Application
 	
 	public void start(Stage stage)throws Exception
 	{
+		ObservableList<String> candibate =
+			FXCollections.observableArrayList
+				("1","2","3","4","5","6","7","8","9");
+		
 		for(int i=0; i<9; i++){
 			for(int j=0; j<9; j++){
+				ComboBox<String> cb = new ComboBox<String>();
 				if (board[i][j] == 0){
-					tf[i][j] = new TextField();
+					cb.setItems(candibate);
+					cb.setOnAction(new InputEventHandler());
 				}else{
-					tf[i][j] = new TextField(String.valueOf(board[i][j]));
-					tf[i][j].setEditable(false);
-					tf[i][j].setBackground(new Background
+					ObservableList<String> ol=
+						FXCollections.observableArrayList();
+					ol.add(String.valueOf(board[i][j]));
+					cb.setItems(ol);
+					cb.setValue(String.valueOf(board[i][j]));
+					cb.setBackground(new Background
 					  (new BackgroundFill(Color.GRAY, null, null)));
 				}
-				tf[i][j].setMaxWidth(40);
-				tf[i][j].setFont(Font.font("MonoSpace", 20));
-
-                if(board[i][j]==0){
-                    tf[i][j].setOnAction(new InputEventHandler());
-                }
+				cb_list.add(cb);
 			}
 		}
-		
 
 		GridPane main_gp = new GridPane();
-		main_gp.setHgap(12);
-		main_gp.setVgap(12);
+		main_gp.setHgap(16);
+		main_gp.setVgap(20);
 		main_gp.setAlignment(Pos.CENTER);
 
 		for(int k=0; k<3; k++){
@@ -77,7 +81,7 @@ public class Kadai04_3 extends Application
 				sub_gp1.setVgap(4);
 				for(int i=0; i<3; i++){
 					for(int j=0; j<3; j++){
-						sub_gp1.add(tf[k*3+i][l*3+j],j,i);
+						sub_gp1.add(cb_list.get((k*3+i)*9+(l*3+j)),j,i);
 					}
 				}
 				main_gp.add(sub_gp1,l,k);
@@ -103,7 +107,7 @@ public class Kadai04_3 extends Application
 		bp.setTop(main_gp);
 		bp.setBottom(sub_gp4);
 
-		Scene sc = new Scene(bp,500,450);
+		Scene sc = new Scene(bp,650,400);
 		stage.setScene(sc);
 		stage.setTitle("数独");
 		stage.show();
@@ -118,14 +122,19 @@ public class Kadai04_3 extends Application
 
             for(int i=0; i<9; i++){
                 for(int j=0; j<9; j++){
-                    try{
-                        a[i][j] = Integer.valueOf(tf[i][j].getText());
-                        if(a[i][j]<0 || 9<a[i][j]){
+                	if(cb_list.get(9*i+j).getValue() != null){
+		                try{
+		                    a[i][j] = Integer.parseInt(cb_list.get(9*i+j).getValue());
+		                    if(a[i][j]<0 || 9<a[i][j]){
                             a[i][j] = 0;
-                        }
-                    }catch(Exception ee){
+                        	}
+		                }catch(Exception ee){
+		                    a[i][j] = 0;
+		                }
+					}else{
                         a[i][j] = 0;
-                    }
+					}
+					
                     if(a[i][j]==0){
                         judge = 1;
                         break;
@@ -176,7 +185,7 @@ public class Kadai04_3 extends Application
             if(judge==0){
                 lb.setText("ゲームクリア！おめでとうございます！！");
             }else{
-                lb.setText("空いているマスに1桁の数字を入力してください");
+                lb.setText("各コンボボックスで数字を選択してください");
             }
 
 		}
@@ -188,10 +197,10 @@ public class Kadai04_3 extends Application
 		{
 			for(int i=0; i<9; i++){
 				for(int j=0; j<9; j++){
-					if (board[i][j] == 0) tf[i][j].setText("");
+					if (board[i][j] == 0) cb_list.get(9*i+j).setValue(null);
 				}
 			}
-			lb.setText("空いているマスに1桁の数字を入力してください");
+			lb.setText("各コンボボックスで数字を選択してください");
 		}
 	}
 }
